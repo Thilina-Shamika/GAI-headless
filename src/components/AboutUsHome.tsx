@@ -47,7 +47,7 @@ export default function AboutUsHome(props: AboutUsHomeProps) {
 	const { num: rateNum, suffix: rateSuffix } = parseCount(props.successRate || "99%")
 	const rate = useCountUp(rateNum, 1800)
 	return (
-		<section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 py-14">
+		<section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 pt-14 pb-0 border-b-1">
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
 				{/* Left: collage + success circle */}
 				<div className="relative self-stretch min-h-[520px]">

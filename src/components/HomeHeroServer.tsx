@@ -3,6 +3,7 @@ import { normalizeWpLink } from "@/lib/wp-rest"
 import Assessment from "@/components/Assessment"
 import MarqueeCountries from "@/components/MarqueeCountries"
 import AboutUsHome from "@/components/AboutUsHome"
+import GlobalReach from "@/components/GlobalReach"
 
 function buildHomeUrl(): string | null {
 	const explicit = process.env.WP_HOME_PAGE_URL
@@ -36,6 +37,7 @@ export default async function HomeHeroServer() {
 		counters: (Array.isArray(acf?.counter) ? acf?.counter : []).map((c: any) => ({ number: c?.counter_number, unit: c?.counter_text, description: c?.counter_description })),
 		circleImageUrl: acf?.circle_image?.url as string | undefined,
 		rotatingImageUrl: acf?.rotating_image?.url as string | undefined,
+		backgroundImageUrl: acf?.background_image?.url as string | undefined,
 	}
 	const assessmentProps = {
 		subheading: acf?.assessment_subheading as string | undefined,
@@ -46,11 +48,10 @@ export default async function HomeHeroServer() {
 	}
 	const countries: string[] = (Array.isArray(acf?.country_list) ? acf?.country_list : []).map((x: any) => x?.country_name).filter(Boolean)
 
-	// Resolve collage images and success rate from possible field names (including *_about keys)
+	// About props
 	const collage1 = (acf?.collage_image_1_about?.url || acf?.collage_image_1?.url || acf?.collage1?.url || acf?.about_collage_1?.url || acf?.about_collage_image_1?.url) as string | undefined
 	const collage2 = (acf?.collage_image_2_about?.url || acf?.collage_image_2?.url || acf?.collage2?.url || acf?.about_collage_2?.url || acf?.about_collage_image_2?.url) as string | undefined
 	const successRate = (acf?.successful_rate || acf?.successfull_rate || acf?.success_rate) as string | undefined
-
 	const aboutProps = {
 		subheading: acf?.about_subheading as string | undefined,
 		heading: acf?.about_heading as string | undefined,
@@ -62,6 +63,23 @@ export default async function HomeHeroServer() {
 		collage2Url: collage2,
 		successRate: successRate,
 	}
+
+	// Global reach props
+	const globalCountries = (Array.isArray(acf?.highlight_countries) ? acf?.highlight_countries : []).slice(0, 6).map((c: any) => ({
+		country: c?.country as string,
+		points: c?.highlight_countries_bullet_points as string,
+		flagUrl: c?.country_flag?.url as string | undefined,
+	}))
+	const globalProps = {
+		subheading: acf?.global_reach_subheading as string | undefined,
+		heading: acf?.global_reach_heading as string | undefined,
+		description: acf?.global_reach_description as string | undefined,
+		button: { text: acf?.global_reach_button_text as string | undefined, href: normalizeWpLink(acf?.global_reach_button_link?.url) || "#" },
+		countries: globalCountries,
+		mapUrl: acf?.map_image?.url as string | undefined,
+		backgroundImageUrl: acf?.global_reach_bg_image?.url as string | undefined,
+	}
+
 	if (!page) {
 		return (
 			<section className="mx-auto max-w-2xl px-4 py-10">
@@ -75,6 +93,7 @@ export default async function HomeHeroServer() {
 			{countries.length ? <MarqueeCountries countries={countries} /> : null}
 			<Assessment {...assessmentProps} />
 			<AboutUsHome {...aboutProps} />
+			<GlobalReach {...globalProps} />
 		</>
 	)
 }
