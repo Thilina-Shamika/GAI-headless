@@ -2,6 +2,7 @@ import HomeHero from "@/components/HomeHero"
 import { normalizeWpLink } from "@/lib/wp-rest"
 import Assessment from "@/components/Assessment"
 import MarqueeCountries from "@/components/MarqueeCountries"
+import AboutUsHome from "@/components/AboutUsHome"
 
 function buildHomeUrl(): string | null {
 	const explicit = process.env.WP_HOME_PAGE_URL
@@ -44,6 +45,23 @@ export default async function HomeHeroServer() {
 		formNote: acf?.form_note as string | undefined,
 	}
 	const countries: string[] = (Array.isArray(acf?.country_list) ? acf?.country_list : []).map((x: any) => x?.country_name).filter(Boolean)
+
+	// Resolve collage images and success rate from possible field names (including *_about keys)
+	const collage1 = (acf?.collage_image_1_about?.url || acf?.collage_image_1?.url || acf?.collage1?.url || acf?.about_collage_1?.url || acf?.about_collage_image_1?.url) as string | undefined
+	const collage2 = (acf?.collage_image_2_about?.url || acf?.collage_image_2?.url || acf?.collage2?.url || acf?.about_collage_2?.url || acf?.about_collage_image_2?.url) as string | undefined
+	const successRate = (acf?.successful_rate || acf?.successfull_rate || acf?.success_rate) as string | undefined
+
+	const aboutProps = {
+		subheading: acf?.about_subheading as string | undefined,
+		heading: acf?.about_heading as string | undefined,
+		description: acf?.about_description as string | undefined,
+		highlights: (Array.isArray(acf?.about_highlights) ? acf?.about_highlights : []).map((x: any) => x?.about_bullet_points).filter(Boolean),
+		stats: (Array.isArray(acf?.about_stats_block) ? acf?.about_stats_block : []).map((x: any) => ({ value: x?.about_stat_number, label: x?.about_stat_number_description })),
+		button: { text: acf?.about_button_text as string | undefined, href: normalizeWpLink(acf?.about_button_link?.url) || "#" },
+		collage1Url: collage1,
+		collage2Url: collage2,
+		successRate: successRate,
+	}
 	if (!page) {
 		return (
 			<section className="mx-auto max-w-2xl px-4 py-10">
@@ -56,6 +74,7 @@ export default async function HomeHeroServer() {
 			<HomeHero {...heroProps} />
 			{countries.length ? <MarqueeCountries countries={countries} /> : null}
 			<Assessment {...assessmentProps} />
+			<AboutUsHome {...aboutProps} />
 		</>
 	)
 }
