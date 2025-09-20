@@ -650,3 +650,110 @@ export async function fetchSuccessStories(): Promise<RestSuccessStory[]> {
 		return []
 	}
 }
+
+// FOOTER HELPERS
+export type RestFooter = {
+	id: number
+	slug: string
+	title: { rendered: string }
+	acf?: {
+		logo?: {
+			ID: number
+			id: number
+			title: string
+			filename: string
+			filesize: number
+			url: string
+			link: string
+			alt: string
+			author: string
+			description: string
+			caption: string
+			name: string
+			status: string
+			uploaded_to: number
+			date: string
+			modified: string
+			menu_order: number
+			mime_type: string
+			type: string
+			subtype: string
+			icon: string
+			width: number
+			height: number
+			sizes: {
+				thumbnail: string
+				"thumbnail-width": number
+				"thumbnail-height": number
+				medium: string
+				"medium-width": number
+				"medium-height": number
+				medium_large: string
+				"medium_large-width": number
+				"medium_large-height": number
+				large: string
+				"large-width": number
+				"large-height": number
+				"1536x1536": string
+				"1536x1536-width": number
+				"1536x1536-height": number
+				"2048x2048": string
+				"2048x2048-width": number
+				"2048x2048-height": number
+			}
+		}
+		about_us_heading: string
+		about_us_short_description: string
+		social_media_accounts: Array<{
+			acf_fc_layout: string
+			social_media_name: string
+			social_media_link: {
+				title: string
+				url: string
+				target: string
+			}
+		}>
+		section_heading: string
+		footer_menu: Array<{
+			acf_fc_layout: string
+			footer_menu_item_name: string
+			footer_menu_item_link: {
+				title: string
+				url: string
+				target: string
+			}
+		}>
+		"3rd_column_heading": string
+		address_block: Array<{
+			acf_fc_layout: string
+			contact_heading: string
+			contact_info: string
+		}>
+		"4th_section_heading": string
+		important_links_block: Array<{
+			acf_fc_layout: string
+			important_menu_item_name: string
+			important_menu_item_link: {
+				title: string
+				url: string
+				target: string
+			}
+		}>
+		copyright_text: string
+		designer_name: string
+	}
+}
+
+export async function fetchFooter(): Promise<RestFooter | null> {
+	const base = getWpRestBase()
+	if (!base) return null
+	const url = `${base}/wp/v2/footer?per_page=1&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestFooter[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}

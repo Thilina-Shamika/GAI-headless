@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import TopBarServer from "@/components/TopBarServer";
 import HeaderServer from "@/components/HeaderServer";
+import FooterServer from "@/components/FooterServer";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -28,6 +29,7 @@ export default async function RootLayout({
         <TopBarServer />
         <HeaderServer />
         {children}
+        <FooterServer />
       </body>
     </html>
   );
