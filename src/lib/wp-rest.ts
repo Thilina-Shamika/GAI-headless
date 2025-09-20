@@ -33,6 +33,10 @@ function getWpRestBase(): string | null {
 	if (fromEnv) return fromEnv
 	const derived = deriveRestBaseFromGraphql()
 	if (derived) return derived
+	// Development fallback to unblock local testing when envs are missing
+	if (process.env.NODE_ENV !== 'production') {
+		return 'http://gai.local/wp-json'
+	}
 	return null
 }
 
@@ -248,6 +252,325 @@ export async function fetchPageBySlug(slug: string): Promise<RestPage | null> {
 		if (process.env.NODE_ENV !== 'production') {
 			console.warn(`[fetchPageBySlug] Failed to fetch ${url}`)
 		}
+		return null
+	}
+}
+
+// SERVICES HELPERS
+export type RestService = {
+	id: number
+	slug: string
+	title?: { rendered?: string }
+	excerpt?: { rendered?: string }
+	content?: { rendered?: string }
+	acf?: Record<string, any>
+}
+
+function getServicesBase(): string | null {
+	const explicit = validateUrl(process.env.WP_SERVICES_URL)
+	if (explicit) return explicit
+	const base = getWpRestBase()
+	if (!base) return null
+	// Try common CPT slugs
+	return `${base}/wp/v2/services`
+}
+
+export async function fetchServices(): Promise<RestService[]> {
+	const base = getServicesBase()
+	if (!base) {
+		if (process.env.NODE_ENV !== 'production') {
+			console.warn('[fetchServices] No base URL. Set WP_REST_BASE or WP_SERVICES_URL')
+		}
+		return []
+	}
+	let url = `${base}?per_page=100&_embed`
+	try {
+		if (process.env.NODE_ENV !== 'production') {
+			console.info(`[fetchServices] GET ${url}`)
+		}
+		let res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) {
+			if (process.env.NODE_ENV !== 'production') {
+				console.warn(`[fetchServices] Non-200 ${res.status} from ${url}`)
+			}
+			// Fallback to singular cpt slug if needed
+			const altBase = base.replace(/\/services$/, '/service')
+			const altUrl = `${altBase}?per_page=100&_embed`
+			if (process.env.NODE_ENV !== 'production') {
+				console.info(`[fetchServices] Fallback GET ${altUrl}`)
+			}
+			res = await fetch(altUrl, { cache: 'no-store' })
+			if (!res.ok) return []
+		}
+		const list = (await res.json()) as RestService[]
+		return list
+	} catch (e) {
+		if (process.env.NODE_ENV !== 'production') {
+			console.warn(`[fetchServices] Failed to fetch ${url}`)
+		}
+		return []
+	}
+}
+
+export async function fetchServiceBySlug(slug: string): Promise<RestService | null> {
+	const base = getServicesBase()
+	if (!base) return null
+	let url = `${base}?slug=${encodeURIComponent(slug)}&_embed` 
+	try {
+		if (process.env.NODE_ENV !== 'production') {
+			console.info(`[fetchServiceBySlug] GET ${url}`)
+		}
+		let res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) {
+			const altBase = base.replace(/\/services$/, '/service')
+			const altUrl = `${altBase}?slug=${encodeURIComponent(slug)}&_embed`
+			if (process.env.NODE_ENV !== 'production') {
+				console.info(`[fetchServiceBySlug] Fallback GET ${altUrl}`)
+			}
+			res = await fetch(altUrl, { cache: 'no-store' })
+			if (!res.ok) return null
+		}
+		const list = (await res.json()) as RestService[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+export function getServicesDebug() {
+	const restBase = getWpRestBase()
+	const servicesBase = getServicesBase()
+	return {
+		env: {
+			WP_REST_BASE: process.env.WP_REST_BASE || undefined,
+			WP_SERVICES_URL: process.env.WP_SERVICES_URL || undefined,
+		},
+		restBase,
+		servicesBase,
+		testUrl: servicesBase ? `${servicesBase}?per_page=1&_embed` : undefined,
+	}
+}
+
+// VISIT-VISA HELPERS (new CPT)
+export type RestVisitVisa = RestService
+
+function getVisitVisaBase(): string | null {
+	const base = getWpRestBase()
+	if (!base) return null
+	return `${base}/wp/v2/visit-visa`
+}
+
+export async function fetchVisitVisas(): Promise<RestVisitVisa[]> {
+	const base = getVisitVisaBase()
+	if (!base) return []
+	const url = `${base}?per_page=100&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return []
+		return (await res.json()) as RestVisitVisa[]
+	} catch {
+		return []
+	}
+}
+
+export async function fetchVisitVisaBySlug(slug: string): Promise<RestVisitVisa | null> {
+	const base = getVisitVisaBase()
+	if (!base) return null
+	const url = `${base}?slug=${encodeURIComponent(slug)}&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestVisitVisa[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+// WORK-PERMIT HELPERS (new CPT)
+export type RestWorkPermit = RestService
+
+function getWorkPermitBase(): string | null {
+	const base = getWpRestBase()
+	if (!base) return null
+	return `${base}/wp/v2/work-permit`
+}
+
+export async function fetchWorkPermits(): Promise<RestWorkPermit[]> {
+	const base = getWorkPermitBase()
+	if (!base) return []
+	const url = `${base}?per_page=100&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return []
+		return (await res.json()) as RestWorkPermit[]
+	} catch {
+		return []
+	}
+}
+
+export async function fetchWorkPermitBySlug(slug: string): Promise<RestWorkPermit | null> {
+	const base = getWorkPermitBase()
+	if (!base) return null
+	const url = `${base}?slug=${encodeURIComponent(slug)}&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestWorkPermit[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+// SKILLED-MIGRATION HELPERS (new CPT)
+export type RestSkilledMigration = RestService
+
+function getSkilledMigrationBase(): string | null {
+	const base = getWpRestBase()
+	if (!base) return null
+	return `${base}/wp/v2/skilled-migration`
+}
+
+export async function fetchSkilledMigrations(): Promise<RestSkilledMigration[]> {
+	const base = getSkilledMigrationBase()
+	if (!base) return []
+	const url = `${base}?per_page=100&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return []
+		return (await res.json()) as RestSkilledMigration[]
+	} catch {
+		return []
+	}
+}
+
+export async function fetchSkilledMigrationBySlug(slug: string): Promise<RestSkilledMigration | null> {
+	const base = getSkilledMigrationBase()
+	if (!base) return null
+	const url = `${base}?slug=${encodeURIComponent(slug)}&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestSkilledMigration[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+// JOB-SEEKER-VISA HELPERS (new CPT)
+export type RestJobSeekerVisa = RestService
+
+function getJobSeekerVisaBase(): string | null {
+	const base = getWpRestBase()
+	if (!base) return null
+	return `${base}/wp/v2/job-seeker-visa`
+}
+
+export async function fetchJobSeekerVisas(): Promise<RestJobSeekerVisa[]> {
+	const base = getJobSeekerVisaBase()
+	if (!base) return []
+	const url = `${base}?per_page=100&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return []
+		return (await res.json()) as RestJobSeekerVisa[]
+	} catch {
+		return []
+	}
+}
+
+export async function fetchJobSeekerVisaBySlug(slug: string): Promise<RestJobSeekerVisa | null> {
+	const base = getJobSeekerVisaBase()
+	if (!base) return null
+	const url = `${base}?slug=${encodeURIComponent(slug)}&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestJobSeekerVisa[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+// WORKING-HOLIDAY-VISA HELPERS (new CPT)
+export type RestWorkingHolidayVisa = RestService
+
+function getWorkingHolidayVisaBase(): string | null {
+	const base = getWpRestBase()
+	if (!base) return null
+	return `${base}/wp/v2/working-holiday-visa`
+}
+
+export async function fetchWorkingHolidayVisas(): Promise<RestWorkingHolidayVisa[]> {
+	const base = getWorkingHolidayVisaBase()
+	if (!base) return []
+	const url = `${base}?per_page=100&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return []
+		return (await res.json()) as RestWorkingHolidayVisa[]
+	} catch {
+		return []
+	}
+}
+
+export async function fetchWorkingHolidayVisaBySlug(slug: string): Promise<RestWorkingHolidayVisa | null> {
+	const base = getWorkingHolidayVisaBase()
+	if (!base) return null
+	const url = `${base}?slug=${encodeURIComponent(slug)}&_embed`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestWorkingHolidayVisa[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+// CONTACT PAGE HELPERS
+export type RestContactPage = {
+	id: number
+	slug: string
+	title: { rendered: string }
+	acf?: Record<string, any>
+}
+
+export async function fetchContactPage(): Promise<RestContactPage | null> {
+	const base = getWpRestBase()
+	if (!base) return null
+	const url = `${base}/wp/v2/pages?slug=contact-us&per_page=1`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestContactPage[]
+		return list?.[0] ?? null
+	} catch {
+		return null
+	}
+}
+
+// VISIT-VISA PAGE HELPERS
+export type RestVisitVisaPage = {
+	id: number
+	slug: string
+	title: { rendered: string }
+	acf?: Record<string, any>
+}
+
+export async function fetchVisitVisaPage(): Promise<RestVisitVisaPage | null> {
+	const base = getWpRestBase()
+	if (!base) return null
+	const url = `${base}/wp/v2/pages?slug=visit-visa&per_page=1`
+	try {
+		const res = await fetch(url, { cache: 'no-store' })
+		if (!res.ok) return null
+		const list = (await res.json()) as RestVisitVisaPage[]
+		return list?.[0] ?? null
+	} catch {
 		return null
 	}
 }

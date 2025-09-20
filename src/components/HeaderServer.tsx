@@ -2,7 +2,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { Phone } from "lucide-react"
 import HeaderNavClient from "@/components/HeaderNavClient"
+import HeaderNavDesktop from "@/components/HeaderNavDesktop"
 import FadeIn from "@/components/FadeIn"
+import { normalizeWpLink, fetchVisitVisas } from "@/lib/wp-rest"
 
 async function fetchHeader() {
 	const baseUrl = process.env.WP_HEADER_URL || "http://gai.local/wp-json/wp/v2/header"
@@ -19,7 +21,15 @@ async function fetchHeader() {
 	const menuRaw: Array<any> = Array.isArray(acf["menu"]) ? acf["menu"] : []
 	const menu = menuRaw
 		.filter((m) => (m?.acf_fc_layout || "").toLowerCase() === "menu_items")
-		.map((m) => ({ label: m?.page_name as string, href: (m?.page_link?.url as string) || "#" }))
+		.map((m) => {
+			const label = m?.page_name as string
+			const href = normalizeWpLink(m?.page_link?.url as string) || "#"
+			// Ensure home link is always "/"
+			return { 
+				label, 
+				href: label?.toLowerCase() === "home" ? "/" : href
+			}
+		})
 	const callText: string = acf["call_us_now"] || "Call us now"
 	const callHref: string | undefined = acf["call_link"]?.url || (acf["call_us_now"] ? `tel:${acf["call_us_now"]}` : undefined)
 	return { logoUrl, logoAlt, menu, callText, callHref }
@@ -29,6 +39,9 @@ export default async function HeaderServer() {
 	const data = await fetchHeader()
 	if (!data) return null
 	const { logoUrl, logoAlt, menu, callText, callHref } = data
+	
+	// Fetch visit visa items for submenu
+	const visitVisas = await fetchVisitVisas()
 	return (
 		<FadeIn>
 			<header className="w-full border-b bg-white">
@@ -36,7 +49,7 @@ export default async function HeaderServer() {
 					{/* Mobile: 2 cols (logo, hamburger). Desktop: 12 cols (3:6:3) */}
 					<div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4 py-4">
 						{/* Logo */}
-						<div className="flex items-center gap-3 md:col-span-3">
+						<div className="flex items-center gap-3 md:col-span-1">
 							{logoUrl ? (
 								<Link href="/" className="block w-full max-w-[120px]">
 									{/* eslint-disable-next-line @next/next/no-img-element */}
@@ -47,19 +60,13 @@ export default async function HeaderServer() {
 							)}
 						</div>
 						{/* Desktop menu */}
-						<nav className="hidden md:flex items-center justify-center gap-8 md:col-span-6">
-							{menu.map((m, i) => (
-								<Link key={`${m.href}-${i}`} href={m.href} className="text-[15px] text-neutral-800 hover:text-black">
-									{m.label}
-								</Link>
-							))}
-						</nav>
+						<HeaderNavDesktop menu={menu} visitVisas={visitVisas} />
 						{/* Mobile hamburger (right column) */}
 						<div className="md:hidden flex justify-end">
 							<HeaderNavClient menu={menu} />
 						</div>
 						{/* Desktop call button (right col) */}
-						<div className="hidden md:flex items-center justify-end md:col-span-3">
+						<div className="hidden md:flex items-center justify-end md:col-span-2">
 							{callHref ? (
 								<a href={callHref} className="inline-flex items-center gap-2 rounded-md bg-[#273378] px-4 py-2 text-white">
 									<Phone className="h-4 w-4" />

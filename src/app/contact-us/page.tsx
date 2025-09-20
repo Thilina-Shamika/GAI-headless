@@ -1,0 +1,339 @@
+import { fetchContactPage } from "@/lib/wp-rest"
+import Image from "next/image"
+import Link from "next/link"
+import { CheckCircle, MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Instagram, Linkedin, Youtube } from "lucide-react"
+
+export const dynamic = "force-dynamic"
+
+function getArray(acf: Record<string, any>, key: string): any[] {
+	const v = acf?.[key]
+	return Array.isArray(v) ? v : []
+}
+
+export default async function ContactUsPage() {
+	const page = await fetchContactPage()
+	if (!page) return <div>Contact page not found</div>
+	
+	const acf: any = page.acf || {}
+
+	const heading = acf?.heading || "Contact Us"
+	const description = acf?.contact_description || ""
+	const bannerImage = acf?.banner_image?.url
+
+	const addressHeading = acf?.address_heading || "Get in Touch"
+	const address = acf?.address || ""
+	const mapLink = acf?.map_link?.url || "#"
+
+	const phoneHeading = acf?.phone_heading || "Phone / WhatsApp"
+	const phoneNumber = acf?.phone_number || ""
+	const phoneLink = acf?.number_link?.url || "#"
+
+	const emailHeading = acf?.email_heading || "Email"
+	const emailAddress = acf?.email_address || ""
+
+	const businessHoursHeading = acf?.business_hours_heading || "Business Hours"
+	const businessHours = getArray(acf, "business_hours_points").map((h) => String(h?.open_hours || "")).filter(Boolean)
+
+	const whyUsHeading = acf?.why_us_heading || "Why Contact Global Alliance Immigration?"
+	const whyUsItems = getArray(acf, "why_us_items").map((item) => String(item?.why_us_bullet_points || "")).filter(Boolean)
+
+	const socialHeading = acf?.social_media_heading || "Stay Connected"
+	const socialSubHeading = acf?.social_media_sub_heading || ""
+	const socialAccounts = getArray(acf, "social_media_accounts")
+
+	const liveSupportText = acf?.live_support_text || ""
+
+	return (
+		<div className="min-h-screen bg-white">
+			{/* Hero Section */}
+			{bannerImage && (
+				<section className="relative h-[60vh] w-full">
+					<Image
+						src={bannerImage}
+						alt="Contact Us"
+						fill
+						className="object-cover"
+						sizes="100vw"
+						priority
+					/>
+					<div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+						<div className="text-center text-white max-w-4xl mx-auto px-4">
+							<h1 className="text-[60px] font-medium mb-6">
+								{heading}
+							</h1>
+							{description && (
+								<p className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto">
+									{description}
+								</p>
+							)}
+						</div>
+					</div>
+				</section>
+			)}
+
+			<div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+					{/* Contact Form */}
+					<div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+						<h2 className="text-3xl font-medium text-[#283277] mb-6">Send us a Message</h2>
+						<form className="space-y-6">
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div>
+									<label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+										Full Name *
+									</label>
+									<input
+										type="text"
+										id="fullName"
+										name="fullName"
+										required
+										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
+										placeholder="Enter your full name"
+									/>
+								</div>
+								<div>
+									<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+										Email Address *
+									</label>
+									<input
+										type="email"
+										id="email"
+										name="email"
+										required
+										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
+										placeholder="Enter your email"
+									/>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div>
+									<label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+										Phone Number / WhatsApp *
+									</label>
+									<input
+										type="tel"
+										id="phone"
+										name="phone"
+										required
+										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
+										placeholder="Enter your phone number"
+									/>
+								</div>
+								<div>
+									<label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+										Country of Interest *
+									</label>
+									<select
+										id="country"
+										name="country"
+										required
+										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
+									>
+										<option value="">Select a country</option>
+										<option value="australia">Australia</option>
+										<option value="canada">Canada</option>
+										<option value="germany">Germany</option>
+										<option value="uk">United Kingdom</option>
+										<option value="usa">United States</option>
+										<option value="new-zealand">New Zealand</option>
+										<option value="other">Other</option>
+									</select>
+								</div>
+							</div>
+
+							<div>
+								<label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
+									Type of Visa / Service *
+								</label>
+								<select
+									id="service"
+									name="service"
+									required
+									className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
+								>
+									<option value="">Select a service</option>
+									<option value="visit-visa">Visit Visa</option>
+									<option value="work-permit">Work Permit</option>
+									<option value="skilled-migration">Skilled Migration</option>
+									<option value="job-seeker-visa">Job Seeker Visa</option>
+									<option value="working-holiday-visa">Working Holiday Visa</option>
+									<option value="other">Other</option>
+								</select>
+							</div>
+
+							<div>
+								<label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+									Message / Inquiry *
+								</label>
+								<textarea
+									id="message"
+									name="message"
+									rows={6}
+									required
+									className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors resize-none"
+									placeholder="Tell us about your immigration goals and how we can help..."
+								></textarea>
+							</div>
+
+							<button
+								type="submit"
+								className="w-full bg-[#283277] text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-[#1f295f] transition-colors duration-200 focus:ring-2 focus:ring-[#2dc0d9] focus:ring-offset-2"
+							>
+								Send Message
+							</button>
+						</form>
+
+						{/* Why Us Section - Under the form */}
+						{whyUsHeading && whyUsItems.length > 0 && (
+							<div className="mt-8 bg-[#f6fbff] rounded-xl p-6 border border-[#2dc0d9]/20">
+								<h3 className="text-xl font-semibold text-[#283277] mb-4">{whyUsHeading}</h3>
+								<ul className="space-y-3">
+									{whyUsItems.map((item, index) => (
+										<li key={index} className="flex items-start gap-3">
+											<CheckCircle className="w-5 h-5 text-[#2dc0d9] mt-0.5 flex-shrink-0" />
+											<span className="text-gray-700">{item}</span>
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+					</div>
+
+					{/* Contact Information */}
+					<div className="space-y-8">
+						{/* Address */}
+						<div className="bg-gray-50 rounded-xl p-6">
+							<div className="flex items-start gap-4">
+								<div className="bg-[#2dc0d9] p-3 rounded-lg">
+									<MapPin className="w-6 h-6 text-white" />
+								</div>
+								<div>
+									<h3 className="text-xl font-semibold text-[#283277] mb-3">{addressHeading}</h3>
+									<p className="text-gray-700 mb-4 whitespace-pre-line">{address}</p>
+									<Link
+										href={mapLink}
+										target="_blank"
+										className="inline-flex items-center text-[#2dc0d9] hover:text-[#1f295f] transition-colors"
+									>
+										<MapPin className="w-4 h-4 mr-2" />
+										View on Map
+									</Link>
+								</div>
+							</div>
+						</div>
+
+						{/* Phone */}
+						<div className="bg-gray-50 rounded-xl p-6">
+							<div className="flex items-start gap-4">
+								<div className="bg-[#2dc0d9] p-3 rounded-lg">
+									<Phone className="w-6 h-6 text-white" />
+								</div>
+								<div>
+									<h3 className="text-xl font-semibold text-[#283277] mb-3">{phoneHeading}</h3>
+									<Link
+										href={phoneLink}
+										className="text-lg text-gray-700 hover:text-[#2dc0d9] transition-colors"
+									>
+										{phoneNumber}
+									</Link>
+								</div>
+							</div>
+						</div>
+
+						{/* Email */}
+						<div className="bg-gray-50 rounded-xl p-6">
+							<div className="flex items-start gap-4">
+								<div className="bg-[#2dc0d9] p-3 rounded-lg">
+									<Mail className="w-6 h-6 text-white" />
+								</div>
+								<div>
+									<h3 className="text-xl font-semibold text-[#283277] mb-3">{emailHeading}</h3>
+									<Link
+										href={`mailto:${emailAddress}`}
+										className="text-lg text-gray-700 hover:text-[#2dc0d9] transition-colors"
+									>
+										{emailAddress}
+									</Link>
+								</div>
+							</div>
+						</div>
+
+						{/* Business Hours */}
+						<div className="bg-gray-50 rounded-xl p-6">
+							<div className="flex items-start gap-4">
+								<div className="bg-[#2dc0d9] p-3 rounded-lg">
+									<Clock className="w-6 h-6 text-white" />
+								</div>
+								<div>
+									<h3 className="text-xl font-semibold text-[#283277] mb-3">{businessHoursHeading}</h3>
+									<ul className="space-y-2">
+										{businessHours.map((hours, index) => (
+											<li key={index} className="text-gray-700">{hours}</li>
+										))}
+									</ul>
+								</div>
+							</div>
+						</div>
+
+
+						{/* Social Media */}
+						{socialHeading && socialAccounts.length > 0 && (
+							<div className="bg-gray-50 rounded-xl p-6">
+								<h3 className="text-xl font-semibold text-[#283277] mb-3">{socialHeading}</h3>
+								{socialSubHeading && (
+									<p className="text-gray-700 mb-4">{socialSubHeading}</p>
+								)}
+								<div className="flex flex-wrap gap-3">
+									{socialAccounts.map((account, index) => {
+										const getIcon = (name: string) => {
+											switch (name.toLowerCase()) {
+												case 'facebook':
+													return <Facebook className="w-5 h-5 mr-2" />
+												case 'instagram':
+													return <Instagram className="w-5 h-5 mr-2" />
+												case 'linkedin':
+													return <Linkedin className="w-5 h-5 mr-2" />
+												case 'youtube':
+													return <Youtube className="w-5 h-5 mr-2" />
+												default:
+													return null
+											}
+										}
+										
+										return (
+											<Link
+												key={index}
+												href={account.social_media_link?.url || "#"}
+												target="_blank"
+												className="inline-flex items-center px-4 py-2 bg-[#283277] text-white rounded-lg hover:bg-[#1f295f] transition-colors"
+											>
+												{getIcon(account.social_media_name)}
+												{account.social_media_name}
+											</Link>
+										)
+									})}
+								</div>
+							</div>
+						)}
+
+						{/* Live Support */}
+						{liveSupportText && (
+							<div className="bg-green-50 rounded-xl p-6 border border-green-200">
+								<div className="flex items-start gap-4">
+									<div className="bg-green-600 p-3 rounded-lg">
+										<MessageCircle className="w-6 h-6 text-white" />
+									</div>
+									<div>
+										<h3 className="text-xl font-semibold text-[#283277] mb-2">Live Support</h3>
+										<p className="text-gray-700">{liveSupportText}</p>
+									</div>
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
