@@ -4,7 +4,7 @@ import { Phone } from "lucide-react"
 import HeaderNavClient from "@/components/HeaderNavClient"
 import HeaderNavDesktop from "@/components/HeaderNavDesktop"
 import FadeIn from "@/components/FadeIn"
-import { normalizeWpLink, fetchVisitVisas } from "@/lib/wp-rest"
+import { normalizeWpLink, fetchVisitVisas, fetchWorkPermits, fetchSkilledMigrations, fetchJobSeekerVisas } from "@/lib/wp-rest"
 
 async function fetchHeader() {
 	const baseUrl = process.env.WP_HEADER_URL || "http://gai.local/wp-json/wp/v2/header"
@@ -40,8 +40,11 @@ export default async function HeaderServer() {
 	if (!data) return null
 	const { logoUrl, logoAlt, menu, callText, callHref } = data
 	
-	// Fetch visit visa items for submenu
+	// Fetch all visa types for submenus
 	const visitVisas = await fetchVisitVisas()
+	const workPermits = await fetchWorkPermits()
+	const skilledMigrations = await fetchSkilledMigrations()
+	const jobSeekerVisas = await fetchJobSeekerVisas()
 	return (
 		<FadeIn>
 			<header className="w-full border-b bg-white">
@@ -60,7 +63,13 @@ export default async function HeaderServer() {
 							)}
 						</div>
 						{/* Desktop menu */}
-						<HeaderNavDesktop menu={menu} visitVisas={visitVisas} />
+						<HeaderNavDesktop 
+							menu={menu} 
+							visitVisas={visitVisas}
+							workPermits={workPermits}
+							skilledMigrations={skilledMigrations}
+							jobSeekerVisas={jobSeekerVisas}
+						/>
 						{/* Mobile hamburger (right column) */}
 						<div className="md:hidden flex justify-end">
 							<HeaderNavClient menu={menu} />
