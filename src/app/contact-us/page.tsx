@@ -1,7 +1,7 @@
 import { fetchContactPage } from "@/lib/wp-rest"
 import Image from "next/image"
 import Link from "next/link"
-import { CheckCircle, MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Instagram, Linkedin, Youtube } from "lucide-react"
+import { CheckCircle, MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Instagram, Linkedin, Youtube, Send } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -45,31 +45,31 @@ export default async function ContactUsPage() {
 
 	return (
 		<div className="min-h-screen bg-white">
-			{/* Hero Section */}
-			{bannerImage && (
-				<section className="relative h-[60vh] w-full">
-					<Image
-						src={bannerImage}
-						alt="Contact Us"
-						fill
-						className="object-cover"
-						sizes="100vw"
-						priority
-					/>
-					<div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-						<div className="text-center text-white max-w-4xl mx-auto px-4">
-							<h1 className="text-[60px] font-medium mb-6">
-								{heading}
-							</h1>
-							{description && (
-								<p className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto">
-									{description}
-								</p>
-							)}
+			{/* Header Section - Centered Design */}
+			<div className="py-20">
+				<div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="text-center">
+						{/* Subheading */}
+						<div className="flex items-center justify-center gap-2 mb-4">
+							<Send className="w-5 h-5 text-[#2dc0d9]" />
+							<span className="text-[#2dc0d9] font-semibold tracking-wide text-sm uppercase">CONTACT US</span>
 						</div>
+						
+						{/* Main Heading */}
+						<h1 className="text-[60px] font-medium text-[#283277] mb-8 leading-tight">
+							{heading}
+						</h1>
+
+						{/* Description */}
+						{description && (
+							<div 
+								className="text-[16px] text-gray-700 leading-relaxed max-w-4xl mx-auto space-y-4"
+								dangerouslySetInnerHTML={{ __html: description }}
+							/>
+						)}
 					</div>
-				</section>
-			)}
+				</div>
+			</div>
 
 			<div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
