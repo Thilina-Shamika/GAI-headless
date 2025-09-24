@@ -30,7 +30,11 @@ function getHostnamesFromEnv(): string[] {
 const allowedHosts = getHostnamesFromEnv();
 
 const nextConfig: NextConfig = {
+  // Silence workspace root inference when parent has another lockfile
+  outputFileTracingRoot: process.cwd(),
   images: {
+    // In dev, avoid optimization to prevent 400s when hostnames aren't yet configured
+    unoptimized: process.env.NODE_ENV !== "production",
     remotePatterns: allowedHosts.flatMap((hostname) => [
       { protocol: "http", hostname, pathname: "**" as const },
       { protocol: "https", hostname, pathname: "**" as const },

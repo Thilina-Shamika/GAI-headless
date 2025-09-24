@@ -53,12 +53,19 @@ export default async function HeaderServer() {
 					<div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4 py-4">
 						{/* Logo */}
 						<div className="flex items-center gap-3 md:col-span-1">
-							{logoUrl ? (
-								<Link href="/" className="block w-full max-w-[120px]">
-									{/* eslint-disable-next-line @next/next/no-img-element */}
-									<img src={logoUrl} alt={logoAlt} className="w-full h-auto" />
-								</Link>
-							) : (
+						{logoUrl ? (
+							<Link href="/" className="block w-full max-w-[140px]">
+								<Image
+									src={logoUrl}
+									alt={logoAlt}
+									width={140}
+									height={76}
+									className="h-auto w-full"
+									sizes="(max-width: 768px) 120px, 140px"
+									priority
+								/>
+							</Link>
+						) : (
 								<span className="text-lg font-semibold">Site</span>
 							)}
 						</div>

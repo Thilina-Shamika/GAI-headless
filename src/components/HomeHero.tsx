@@ -84,7 +84,14 @@ export default function HomeHero(props: HomeHeroProps) {
 						</motion.div>
 					) : null}
 					{props.rotatingImageUrl ? (
-						<img src={props.rotatingImageUrl} alt="" className="absolute inset-0 m-auto w-56 h-56 rounded-full object-cover shadow-xl" />
+						<Image
+							src={props.rotatingImageUrl}
+							alt=""
+							width={448}
+							height={448}
+							className="absolute inset-0 m-auto w-56 h-56 rounded-full object-cover shadow-xl z-10"
+							priority
+						/>
 					) : null}
 				</div>
 			</div>

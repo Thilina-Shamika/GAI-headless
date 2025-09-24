@@ -8,8 +8,9 @@ export async function generateStaticParams() {
 	return slugs.map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-	const post = await fetchPostBySlug(params.slug)
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await props.params
+    const post = await fetchPostBySlug(slug)
 	if (!post) return {}
 	return {
 		title: post.seo?.title || post.title,
@@ -17,8 +18,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 	}
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-	const post = await fetchPostBySlug(params.slug)
+export default async function PostPage(props: { params: Promise<{ slug: string }> }) {
+    const { slug } = await props.params
+    const post = await fetchPostBySlug(slug)
 	if (!post) return notFound()
 	return (
 		<div className="mx-auto px-4 py-10">

@@ -16,11 +16,12 @@ function getAcfArray(acf: Record<string, any>, key: string): any[] {
 	return Array.isArray(v) ? v : []
 }
 
-export default async function VisitVisaDetailPage({ params }: { params: { slug: string } }) {
-	const [item, all] = await Promise.all([
-		fetchVisitVisaBySlug(params.slug),
-		fetchVisitVisas(),
-	])
+export default async function VisitVisaDetailPage(props: { params: Promise<{ slug: string }> }) {
+    const { slug } = await props.params
+    const [item, all] = await Promise.all([
+        fetchVisitVisaBySlug(slug),
+        fetchVisitVisas(),
+    ])
 	if (!item) return notFound()
 	const acf: any = (item as any)?.acf || {}
 
@@ -102,7 +103,7 @@ export default async function VisitVisaDetailPage({ params }: { params: { slug: 
 						<nav className="rounded-xl bg-white ring-1 ring-black/5 overflow-hidden">
 							<ul className="divide-y divide-black/5">
 								{all.map((it) => {
-									const isActive = it.slug === params.slug
+                                    const isActive = it.slug === slug
 									const iacf: any = (it as any)?.acf || {}
 									const label = (iacf?.service_name as string) || it.title?.rendered || "Visit Visa"
 									return (
