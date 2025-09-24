@@ -57,6 +57,22 @@ export function normalizeWpLink(href?: string): string | undefined {
 	}
 }
 
+export function normalizeWpMediaUrl(input?: string): string | undefined {
+    if (!input) return undefined
+    try {
+        const url = new URL(input)
+        // Force https in production but do not change hostname/path
+        if (url.protocol !== 'https:' && process.env.NODE_ENV === 'production') {
+            url.protocol = 'https:'
+            return url.toString()
+        }
+        return input
+    } catch {
+        // If it's a relative URL, just return as-is
+        return input
+    }
+}
+
 export type HeaderOptions = {
 	site_title?: string
 	logo_url?: string

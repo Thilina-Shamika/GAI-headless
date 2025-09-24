@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { fetchVisitVisas, fetchVisitVisaPage } from "@/lib/wp-rest"
+import { fetchVisitVisas, fetchVisitVisaPage, normalizeWpMediaUrl } from "@/lib/wp-rest"
 import { Check } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -24,14 +24,14 @@ export default async function VisitVisaIndexPage() {
 							const acf: any = (it as any)?.acf || {}
 							const title = (acf?.service_name as string) || it.title?.rendered || "Visit Visa"
 							const subheading = (acf?.service_subheading as string) || ""
-							const img = (acf?.service_image?.url as string) || undefined
+                            const img = normalizeWpMediaUrl((acf?.service_image?.url as string) || undefined)
 							return (
 								<Link href={`/visit-visa/${it.slug}`} key={it.id} className="w-full max-w-[360px] mx-auto rounded-lg overflow-hidden flex flex-col relative group cursor-pointer hover:scale-105 transition-transform duration-300">
 									{/* Background Image with Dark Overlay */}
 									<div className="relative h-96 w-full">
 										{img ? (
-											<Image 
-												src={img} 
+                                            <Image 
+                                                src={img} 
 												alt={title} 
 												width={600} 
 												height={360} 
