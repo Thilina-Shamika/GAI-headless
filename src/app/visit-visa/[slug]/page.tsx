@@ -27,7 +27,8 @@ export default async function VisitVisaDetailPage({ params }: { params: { slug: 
 	const title = (acf?.service_name as string) || item.title?.rendered || "Visit Visa"
 	const subheading = (acf?.service_subheading as string) || ""
 	const description = (acf?.service_description as string) || ""
-	const heroImg = acf?.service_image?.url as string | undefined
+    // Use banner image for the dynamic page hero; fallback to service image if banner not set
+    const heroImg = (acf?.banner_image?.url as string) || (acf?.service_image?.url as string) || undefined
 
 	const sec2Heading = (acf?.["2nd_section_heading"] as string) || ""
 	const sec2Description = (acf?.["2nd_section_description"] as string) || ""

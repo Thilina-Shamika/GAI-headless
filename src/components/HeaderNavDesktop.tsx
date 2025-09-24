@@ -9,7 +9,7 @@ export type HeaderMenuItem = { label: string; href: string }
 export type VisaItem = { 
 	id: number
 	slug: string
-	title: { rendered: string }
+	title?: { rendered?: string }
 	acf?: { service_name?: string }
 }
 

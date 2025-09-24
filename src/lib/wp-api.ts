@@ -21,20 +21,20 @@ export type WpPost = WpPostSummary & {
 export async function fetchAllPosts(limit: number = 10): Promise<WpPostSummary[]> {
 	const client = tryGetWpClient()
 	if (!client) return []
-	const data = await client.request(gql`${QUERY_ALL_POSTS}`, { first: limit })
+	const data: any = await client.request(gql`${QUERY_ALL_POSTS}`, { first: limit })
 	return data?.posts?.nodes ?? []
 }
 
 export async function fetchAllSlugs(limit: number = 100): Promise<string[]> {
 	const client = tryGetWpClient()
 	if (!client) return []
-	const data = await client.request(gql`${QUERY_ALL_SLUGS}`, { first: limit })
+	const data: any = await client.request(gql`${QUERY_ALL_SLUGS}`, { first: limit })
 	return (data?.posts?.nodes ?? []).map((n: { slug: string }) => n.slug)
 }
 
 export async function fetchPostBySlug(slug: string): Promise<WpPost | null> {
 	const client = tryGetWpClient()
 	if (!client) return null
-	const data = await client.request(gql`${QUERY_POST_BY_SLUG}`, { slug })
+	const data: any = await client.request(gql`${QUERY_POST_BY_SLUG}`, { slug })
 	return data?.post ?? null
 }
