@@ -32,7 +32,7 @@
    - **Package Manager:** npm
    - **Application Mode:** production
    - **Application Root:** / (root of httpdocs)
-   - **Application Startup File:** app.js
+   - **Application Startup File:** server.js
    - **Document Root:** /httpdocs
 
 3. **Environment Variables:**
@@ -47,12 +47,12 @@
 
 1. **Upload the contents of `.next/standalone/` to your domain's httpdocs folder**
 
-   - This includes: app.js, package.json, and the .next folder
+   - This includes: server.js, package.json, and the .next folder
    - Make sure all files are uploaded to the root of httpdocs
 
 2. **Set proper permissions:**
    ```bash
-   chmod +x app.js
+   chmod +x server.js
    chmod 644 package.json
    chmod -R 755 .next/
    ```
@@ -83,9 +83,9 @@
 
 ### Common Issues:
 
-1. **"app.js not found" error:**
+1. **"server.js not found" error:**
 
-   - Ensure app.js is in the root of httpdocs
+   - Ensure server.js is in the root of httpdocs
    - Check file permissions (should be executable)
 
 2. **Port conflicts:**
@@ -119,7 +119,7 @@ WP_MEDIA_HOSTS=your-media-hosts
 
 ```
 /httpdocs/
-├── app.js
+├── server.js
 ├── package.json
 ├── .next/
 │   ├── standalone/
