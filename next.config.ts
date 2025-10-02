@@ -32,6 +32,8 @@ const allowedHosts = getHostnamesFromEnv();
 const nextConfig: NextConfig = {
   // Silence workspace root inference when parent has another lockfile
   outputFileTracingRoot: process.cwd(),
+  // Configure for Plesk deployment
+  output: 'standalone',
   images: {
     // In dev, avoid optimization to prevent 400s when hostnames aren't yet configured
     unoptimized: process.env.NODE_ENV !== "production",
@@ -40,6 +42,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname, pathname: "**" as const },
     ]),
   },
+  // Ensure proper asset handling for Plesk
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  trailingSlash: false,
+  // Disable x-powered-by header for security
+  poweredByHeader: false,
 };
 
 export default nextConfig;

@@ -1,0 +1,20 @@
+{
+  "name": "gai-dubai",
+  "version": "1.0.0",
+  "description": "Global Alliance Immigration Next.js Application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "build": "next build",
+    "dev": "next dev"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "next": "15.5.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  }
+}

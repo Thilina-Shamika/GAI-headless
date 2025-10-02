@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "node app.js",
+    "lint": "eslint",
+    "postbuild": "cp -r .next/standalone/* . && cp -r .next/static .next/standalone/.next/",
+    "deploy": "npm run build && npm run postbuild"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
