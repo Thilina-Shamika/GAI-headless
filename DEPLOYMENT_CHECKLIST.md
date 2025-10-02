@@ -34,7 +34,7 @@
    - **Package Manager:** npm
    - **Application Mode:** production
    - **Application Root:** / (root of httpdocs)
-   - **Application Startup File:** app.js
+   - **Application Startup File:** server.js
    - **Document Root:** /httpdocs
 
 ### Step 3: Set Environment Variables
@@ -70,9 +70,9 @@ chmod -R 755 .next/
 
 ## 🔧 Troubleshooting
 
-### If you get "app.js not found":
+### If you get "server.js not found":
 
-- Ensure `app.js` is in the root of `httpdocs`
+- Ensure `server.js` is in the root of `httpdocs`
 - Check file permissions (should be executable)
 
 ### If you get port conflicts:
@@ -95,7 +95,7 @@ chmod -R 755 .next/
 
 ```
 /httpdocs/
-├── app.js                    ← Node.js entry point
+├── server.js                 ← Node.js entry point
 ├── package.json             ← Dependencies
 ├── .next/                   ← Next.js build output
 │   ├── standalone/         ← Standalone server files

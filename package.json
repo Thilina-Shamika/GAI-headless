@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node app.js",
+    "start": "node server.js",
     "lint": "eslint",
     "postbuild": "cp -r .next/standalone/* . && cp -r .next/static .next/standalone/.next/",
     "deploy": "npm run build && npm run postbuild"
