@@ -1,0 +1,52 @@
+---
+deployment:
+  tasks:
+    - export NODE_ENV=production
+    - npm ci --production
+    - npm run build
+    - cp -r .next/standalone/* .
+    - cp -r .next/static .next/standalone/.next/
+    - chmod +x server.js
+    - chmod 644 package.json
+    - chmod -R 755 .next/
+  hooks:
+    after:
+      - echo "Deployment completed successfully"
+      - echo "Application should be running on port 3000"
+
+# cPanel Node.js Configuration
+nodejs:
+  version: "18"
+  start_file: "server.js"
+  app_mode: "production"
+  app_root: "/"
+  document_root: "/public_html"
+  port: 3000
+
+# Environment Variables
+env:
+  NODE_ENV: "production"
+  PORT: "3000"
+  NEXT_PUBLIC_SITE_URL: "https://your-domain.com"
+  WP_GRAPHQL_ENDPOINT: "your-wordpress-graphql-endpoint"
+  WP_REST_BASE: "your-wordpress-rest-endpoint"
+  WP_HEADER_URL: "your-header-api-endpoint"
+  WP_SERVICES_URL: "your-services-api-endpoint"
+  WP_MEDIA_HOSTS: "your-media-hosts"
+
+# Build Configuration
+build:
+  commands:
+    - npm ci --production
+    - npm run build
+  output_directory: ".next/standalone"
+
+# File Permissions
+permissions:
+  - path: "server.js"
+    mode: "755"
+  - path: "package.json"
+    mode: "644"
+  - path: ".next/"
+    mode: "755"
+    recursive: true
