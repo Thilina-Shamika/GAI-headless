@@ -2,7 +2,7 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/globalallianc/site/
-    - export NODE_ENV=production
+    - echo "Starting deployment without build process..."
     - /bin/cp -r .next/standalone/* $DEPLOYPATH
     - /bin/cp -r .next/static $DEPLOYPATH.next/
     - /bin/cp -r public $DEPLOYPATH
@@ -10,3 +10,4 @@ deployment:
     - chmod +x $DEPLOYPATH/server.js
     - chmod 644 $DEPLOYPATH/package.json
     - chmod -R 755 $DEPLOYPATH.next/
+    - echo "Deployment completed successfully!"
