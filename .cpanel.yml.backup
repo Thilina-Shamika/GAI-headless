@@ -1,0 +1,11 @@
+---
+deployment:
+  tasks:
+    - export NODE_ENV=production
+    - npm ci --production
+    - npm run build
+    - cp -r .next/standalone/* .
+    - cp -r .next/static .next/standalone/.next/
+    - chmod +x server.js
+    - chmod 644 package.json
+    - chmod -R 755 .next/

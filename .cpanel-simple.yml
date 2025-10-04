@@ -1,0 +1,6 @@
+deployment:
+  tasks:
+    - npm ci --production
+    - npm run build
+    - cp -r .next/standalone/* .
+    - chmod +x server.js
