@@ -2,4 +2,10 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/globalallianc/site/
+    - export NODE_ENV=production
     - /bin/cp -r .next/standalone/* $DEPLOYPATH
+    - /bin/cp -r .next/static $DEPLOYPATH.next/
+    - /bin/cp -r public $DEPLOYPATH
+    - chmod +x $DEPLOYPATH/server.js
+    - chmod 644 $DEPLOYPATH/package.json
+    - chmod -R 755 $DEPLOYPATH.next/
